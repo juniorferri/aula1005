@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Listagem de clientes</title>
+    </head>
+    <body>
+        <h1>Sistema de Pedidos</h1>        
+        <div>
+            <p>Listagem de clientes</p>
+            <form>
+                <label>ID: </label>
+                <input type="text" id="tx_id" disabled="disabled" readonly="readonly"/>
+                <br>
+                <label> NOME: </label>
+                <input type="text" id="tx_nome_razao_social"/>
+                <br>
+                <button type="button" onclick="criar()">Criar</button>
+                <button type="button" onclick="alterar()">Alterar</button>
+                <button type="button" onclick="carregar()">Listar</button>
+                <button type="button" onclick="limpar()">Limpar</button>
+            </form>
+            <table border="1" id="listagem"></table>
+        </div>
+    </body>
+
+<script>
+    function limpar(){
+        document.getElementById("tx_id").value = "";
+        document.getElementById("tx_nome_razao_social").value = "";
+    }
+
+    function alterar(){
+        console.log("Alterar cliente!!!!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                alert("Cliente alterado com sucesso");
+                carregar();
+            }
+        };
+        xhttp.open("PUT", "/cliente/" + document.getElementById("tx_id").value);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify({
+            id: document.getElementById("tx_id").value, 
+            nome: document.getElementById("tx_nome_razao_social").value
+        }));
+    }
+
+    function excluir(id_cliente){
+        console.log("Excluir cliente!!!!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                alert("Cliente excluído com sucesso");
+                carregar();
+            }
+        };
+        xhttp.open("DELETE", "/cliente/" + id_cliente);
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send();
+    }
+
+    function criar(){
+        console.log("Criar novo cliente!!!!");
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                alert("Cliente criado com sucesso");
+                carregar();
+            }
+        };
+        xhttp.open("POST", "/cliente");
+        xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        xhttp.send(JSON.stringify({
+            id: null, 
+            nome: document.getElementById("tx_nome_razao_social").value
+        }));
+    }
+
+    function preencher(id_cliente, nome_cliente){
+        console.log(id_cliente, nome_cliente);
+        document.getElementById("tx_id").value = id_cliente;
+        document.getElementById("tx_nome_razao_social").value = nome_cliente;
+    }
+
+    function carregar(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+            if(this.readyState == 4 && this.status == 200){
+                var dados = JSON.parse(this.responseText);
+                var conteudo = "<tr> <th>ID</th> <th>Nome</th> <th>Ações</th> </tr>";        
+                for(var cliente of dados){
+                    conteudo += "<tr> <td>" + cliente.id + " </td> <td>"+ cliente.nome + "</td>";
+                    conteudo += "<td> <button type='button' onclick='preencher(\"" + cliente.id + "\", \"" + cliente.nome + "\")'>Alterar</button>  ";    
+                    conteudo += "<button type='button' onclick='excluir(" + cliente.id + ")'>Excluir</button></td></tr>";
+                }
+                document.getElementById("listagem").innerHTML = conteudo;
+                limpar();
+                console.log(this.responseText);
+                console.log(dados);
+            }
+        };
+        xhttp.open("GET", "/clientes");
+        xhttp.send();
+    }
+
+</script>
+
+</html>
