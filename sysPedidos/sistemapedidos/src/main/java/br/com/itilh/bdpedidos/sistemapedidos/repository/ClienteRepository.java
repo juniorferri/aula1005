@@ -11,17 +11,17 @@ import br.com.itilh.bdpedidos.sistemapedidos.model.Cliente;
 public interface ClienteRepository extends CrudRepository<Cliente , BigInteger > {
 
      // Select * from tb_clientes where tx_nome = 'nome'//
-    List<Cliente> findByNomeRazaoSocial(String nome);
+    List<Cliente> findByNomeRazaoSocial(String nomeRazaoSocial);
 
     // Select * from tb_clientes where UPPER(tx_nome) like UPPER('nome%')//
-    List<Cliente> findByNomeRazaoSocialStartingWithIgnoreCase(String nome);
+    List<Cliente> findByNomeRazaoSocialStartingWithIgnoreCase(String nomeRazaoSocial);
 
     // Select * from tb_clientes where UPPER(tx_nome) like UPPER('%nome')//
-    List<Cliente> findByNomeRazaoSocialEndingWithIgnoreCase(String nome);
+    List<Cliente> findByNomeRazaoSocialEndingWithIgnoreCase(String nomeRazaoSocial);
 
     // Select * from tb_clientes where UPPER(tx_nome) like UPPER('%nome%')//
-    List<Cliente> findByNomeRazaoSocialContainingIgnoreCase(String nome);
+    List<Cliente> findByNomeRazaoSocialContainingIgnoreCase(String nomeRazaoSocial);
 
     @Query("FROM Cliente e WHERE e.nomeRazaoSocial like %?1")
-    List<Cliente> findByMinhaQuery(String nome);
+    List<Cliente> findByMinhaQuery(String nomeRazaoSocial);
 }

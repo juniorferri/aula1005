@@ -80,9 +80,9 @@ public ClienteController(ClienteRepository repositorio){
     @DeleteMapping("/cliente/{id}")
     public String deletePorId(@PathVariable BigInteger id) throws Exception {
 
-        Optional<Cliente> estadoAmazenado = repositorio.findById(id);
-        if(estadoAmazenado.isPresent()){
-            repositorio.delete(estadoAmazenado.get());
+        Optional<Cliente> clienteAmazenado = repositorio.findById(id);
+        if(clienteAmazenado.isPresent()){
+            repositorio.delete(clienteAmazenado.get());
             return "Excluído";
         }
         throw new Exception("Id não econtrado para a exclusão");

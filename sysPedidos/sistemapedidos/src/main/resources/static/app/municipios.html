@@ -1,14 +1,96 @@
-<!DOCTYPE html>
 <html>
-<head>
-    <meta charset='utf-8'>
-    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
-    <title>Municípios</title>
-    <meta name='viewport' content='width=device-width, initial-scale=1'>
-    <link rel='stylesheet' type='text/css' media='screen' href='main.css'>
-    <script src='main.js'></script>
-</head>
-<body>
-    <h1>Listagem de Municípios</h1>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>Listagem de municipios</title>
+    </head>
+    <body>
+        <h1>Sistema de Pedidos</h1>        
+        <div>
+            <p>Listagem de municipios</p>
+            <form>
+                <label>ID: </label>
+                <input type="text" id="tx_id" disabled="disabled" readonly="readonly"/>
+                <br>
+                <label> NOME: </label>
+                <input type="text" id="tx_nome"/>
+                <br>
+                <button type="button" onclick="criar()">Criar</button>
+                <button type="button" onclick="alterar()">Alterar</button>
+                <button type="button" onclick="carregar()">Listar</button>
+                <button type="button" onclick="limpar()">Limpar</button>
+            </form>
+            <table border="1" id="listagem"></table>
+        </div>
+    </body>
+
+<script>
+    function limpar(){
+        document.getElementById("tx_id").value = "";
+        document.getElementById("tx_nome").value ="";
+    }
+    function alterar(){
+       console.log("Alterar municipio!!!!");
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function(){
+          if(this.readyState == 4 && this.status==200){
+                alert("Municipio alterado com sucesso");
+                carregar();
+          }}
+       xhttp.open("PUT","/municipio/" + document.getElementById("tx_id").value);
+       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+       xhttp.send(JSON.stringify({id:document.getElementById("tx_id").value, nome: document.getElementById("tx_nome").value}));
+    }
+
+    function excluir(id_municipio){
+       console.log("excluir municipio!!!!");
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function(){
+          if(this.readyState == 4 && this.status==200){
+                alert("Municipio excluído com sucesso");
+                carregar();
+          }}
+       xhttp.open("DELETE","/municipio/" + id_municipio);
+       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+       xhttp.send();
+    }
+    function criar(){
+       console.log("Criar novo municipio!!!!");
+       var xhttp = new XMLHttpRequest();
+       xhttp.onreadystatechange = function(){
+          if(this.readyState == 4 && this.status==200){
+                alert("municipio criado com sucesso");
+                carregar();
+          }}
+       xhttp.open("POST","/municipio");
+       xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+       xhttp.send(JSON.stringify({id:null, nome: document.getElementById("tx_nome").value}));
+    }
+
+    function preencher (id_municipio, nome_municipio){
+        console.log(id_municipio, nome_municipio);
+        document.getElementById("tx_id").value = id_municipio;
+        document.getElementById("tx_nome").value = decodeURI(nome_municipio);
+    }
+    function carregar(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function(){
+        if(this.readyState == 4 && this.status == 200){ 
+            var dados = JSON.parse(this.responseText); 
+            var conteudo ="<tr> <th>ID</th> <th>Nome</th> <th>Ações</th> </tr>";        
+            for(var municipio of dados){
+                conteudo += "<tr> <td>" + municipio.id + " </td> <td>"+ municipio.nome + "</td>";
+                conteudo += "<td> <button type='button' onclick=preencher('"+ municipio.id +"','"+ encodeURI (municipio.nome) +"')>Alterar</button>  ";    
+                conteudo += "<button type='button' onclick='excluir("+ municipio.id +")'>Excluir</button></td></tr>";
+            }
+            document.getElementById("listagem").innerHTML = conteudo;
+            limpar();
+            console.log(this.responseText);
+            console.log(dados);  }
+        };
+        xhttp.open("GET","/municipios");
+        xhttp.send();
+    }
+
+</script>
+
 </html>
